@@ -1,0 +1,30 @@
+name: Latte API
+
+on:
+  push:
+    branches: ["default"]
+    paths:
+      - "./**"
+      - ".github/workflows/latte-api.yaml"
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Login to the Container registry
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN }}
+      - name: Build and push Docker Images
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          push: true
+          tags: ghcr.io/JSum-PhamNhatHa/latte-api:latest
